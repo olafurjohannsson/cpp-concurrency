@@ -15,14 +15,20 @@ int main()
         using namespace std::chrono_literals;
         for (;;) {
 
-            int written = sock.write_to_server("test");
+            int written = sock.Write("test");
 
             std::cout << "written: " << written << std::endl;
 
             std::this_thread::sleep_for(2s);
 
-            sock.read();
+            std::string r = sock.Read();
+
+            if (!r.empty()) {
+                printf("r: %s\n", r.c_str());
+            }
         }
+
+        sock.Close();
 
     }
     return 0;

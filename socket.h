@@ -17,6 +17,7 @@ class Socket
     struct sockaddr_in servername;
 
     public:
+
         Socket(uint32_t port) 
         {
             // init file descriptor
@@ -24,8 +25,8 @@ class Socket
 
             // file descriptor fail
             if (sock_fd < 0) {
-                perror("socket error");
-                exit(EXIT_FAILURE);
+                printf("err\n");
+                return;
             }
 
             servername.sin_family = AF_INET;
@@ -33,46 +34,35 @@ class Socket
         };
 
         bool Connect(const char *hostname) {
-            struct hostent *hostinfo;
-            hostinfo = gethostbyname(hostname);
+            
+            struct hostent *hostinfo = gethostbyname(hostname);
             
             // host not found
             if (hostinfo == NULL) {
-                printf("Unknown host %s.\n", hostname);
                 return false;
-                //exit(EXIT_FAILURE);
             }
+
             servername.sin_addr = *(struct in_addr *) hostinfo->h_addr;
 
             if (0 > connect(sock_fd, (struct sockaddr *)&servername, sizeof(servername))) {
-                printf("connect error");
                 return false;
-                //exit(EXIT_FAILURE);
             }
             return true;
         }
 
         bool Close() { close(sock_fd); }
 
-        int write_to_server(std::string value)
+        int Write(std::string value)
         {
-            //char *message_buffer;
-            
-            printf("value: %s\n", value.c_str());
-            //strncpy(message_buffer, value.c_str(), value.size());
-
-            //printf("message_buff: %s\n", message_buffer);
-            int nbytes = write(sock_fd, value.c_str(), strlen(value.c_str()) + 1);
+            int nbytes = ::write(sock_fd, value.c_str(), strlen(value.c_str()) + 1);
             if (nbytes < 0) {
-                printf("write");
-                //exit(EXIT_FAILURE);
                 return 0;
             }
             
             return nbytes;
         }
 
-        void read() {
+        const std::string Read() {
             char buffer[512];
             int nbytes;
 
@@ -83,10 +73,12 @@ class Socket
                 printf("no bytes read\n");
             }
             else if (nbytes == 0) {
-                // EOF
+                printf("EOF\n");
             }
             else {
-                printf("buffer length: %d\n", strlen(buffer));
+                if (buffer != NULL)
+                    return std::string(buffer);
+                return "";
             }
         }
 };
