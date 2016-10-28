@@ -26,3 +26,5 @@ std:condition_variable_any
 std::thread_local
 
 use queue/dequeue for data
+talk about select(), kqueue(), poll(), epoll(), fork()
+asynchronous passes control to kernelspace for further processing
