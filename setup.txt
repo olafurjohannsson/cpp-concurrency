@@ -1,0 +1,28 @@
+
+Concurrent networking using threads and asynchronous tasks in C++
+
+1. intro and environment
+2. basics and setup C network handling
+3. call synchronously to a service
+4. use threads to call concurrently to a service
+5. fix previous example using mutexes and atomics
+6. review?
+7. future, promises and async
+8. review?
+9. OpenMP
+10. last words
+
+not more than ~150 words
+
+std::mutex
+std::recursive_mutex
+std::atomic
+std::lock_guard
+std::unique_lock
+std::try_lock
+std::lock
+std::condition_variable
+std:condition_variable_any
+std::thread_local
+
+use queue/dequeue for data
