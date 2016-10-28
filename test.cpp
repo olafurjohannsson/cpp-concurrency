@@ -20,6 +20,8 @@ int main()
             std::cout << "written: " << written << std::endl;
 
             std::this_thread::sleep_for(2s);
+
+            sock.read();
         }
 
     }

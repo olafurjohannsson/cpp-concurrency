@@ -56,17 +56,37 @@ class Socket
 
         int write_to_server(std::string value)
         {
-            char *message_buffer;
+            //char *message_buffer;
             
-            printf("value: %s\n", value);
-            strncpy(message_buffer, value.c_str(), value.size());
-            printf("message_buff: %s\n", message_buffer);
-            int nbytes = write(sock_fd, message_buffer, strlen(message_buffer) + 1);
+            printf("value: %s\n", value.c_str());
+            //strncpy(message_buffer, value.c_str(), value.size());
+
+            //printf("message_buff: %s\n", message_buffer);
+            int nbytes = write(sock_fd, value.c_str(), strlen(value.c_str()) + 1);
             if (nbytes < 0) {
                 printf("write");
                 //exit(EXIT_FAILURE);
                 return 0;
             }
+            
             return nbytes;
+        }
+
+        void read() {
+            char buffer[512];
+            int nbytes;
+
+            memset(buffer, 0x00, 512);
+
+            nbytes = ::read(sock_fd, buffer, 512);
+            if (nbytes < 0) {
+                printf("no bytes read\n");
+            }
+            else if (nbytes == 0) {
+                // EOF
+            }
+            else {
+                printf("buffer length: %d\n", strlen(buffer));
+            }
         }
 };
