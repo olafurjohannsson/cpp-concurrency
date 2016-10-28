@@ -8,66 +8,65 @@
 #include <netinet/in.h>
 #include <netdb.h>
 
+#include <iostream>
+#include <string>
+
 class Socket
 {
-    
+    int32_t sock_fd;
+    struct sockaddr_in servername;
+
     public:
-        Socket() 
+        Socket(uint32_t port) 
         {
-            int32_t sock;
-            uint32_t port;
-            struct sockaddr_in servername;
+            // init file descriptor
+            sock_fd = socket(PF_INET, SOCK_STREAM, 0);
 
-            sock = socket(PF_INET, SOCK_STREAM, 0);
-
-            port = 80;
-
-            if (sock < 0)
-            {
+            // file descriptor fail
+            if (sock_fd < 0) {
                 perror("socket error");
                 exit(EXIT_FAILURE);
             }
 
-            init_sockaddr(&servername, "127.0.0.1", port);
-
-            if (0 > connect(sock, (struct sockaddr *)&servername, sizeof(servername)))
-            {
-                perror("connect error");
-                exit(EXIT_FAILURE);
-            }
-            
-            char msg_buffer[4];
-            strncpy(msg_buffer, "asdf", 4);
-            write_to_server(sock, msg_buffer);
-
-            close(sock);
+            servername.sin_family = AF_INET;
+            servername.sin_port = htons(port);
         };
 
-    private:
-
-        void write_to_server(int fd, char *message)
-        {
-            int nbytes = write(fd, message, strlen(message) + 1);
-            if (nbytes < 0)
-            {
-                perror("write");
-                exit(EXIT_FAILURE);
+        bool Connect(const char *hostname) {
+            struct hostent *hostinfo;
+            hostinfo = gethostbyname(hostname);
+            
+            // host not found
+            if (hostinfo == NULL) {
+                printf("Unknown host %s.\n", hostname);
+                return false;
+                //exit(EXIT_FAILURE);
             }
+            servername.sin_addr = *(struct in_addr *) hostinfo->h_addr;
+
+            if (0 > connect(sock_fd, (struct sockaddr *)&servername, sizeof(servername))) {
+                printf("connect error");
+                return false;
+                //exit(EXIT_FAILURE);
+            }
+            return true;
         }
 
-        void init_sockaddr(struct sockaddr_in *name, const char *hostname, uint16_t port)
+        bool Close() { close(sock_fd); }
+
+        int write_to_server(std::string value)
         {
-            struct hostent *hostinfo;
-
-            name->sin_family = AF_INET;
-            name->sin_port = htons(port);
-            hostinfo = gethostbyname(hostname);
-
-            if (hostinfo == NULL)
-            {
-                printf("Unknown host %s.\n", hostname);
-                exit(EXIT_FAILURE);
+            char *message_buffer;
+            
+            printf("value: %s\n", value);
+            strncpy(message_buffer, value.c_str(), value.size());
+            printf("message_buff: %s\n", message_buffer);
+            int nbytes = write(sock_fd, message_buffer, strlen(message_buffer) + 1);
+            if (nbytes < 0) {
+                printf("write");
+                //exit(EXIT_FAILURE);
+                return 0;
             }
-            name->sin_addr = *(struct in_addr *) hostinfo->h_addr;
+            return nbytes;
         }
 };

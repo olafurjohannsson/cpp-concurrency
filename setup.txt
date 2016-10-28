@@ -27,4 +27,16 @@ std::thread_local
 
 use queue/dequeue for data
 talk about select(), kqueue(), poll(), epoll(), fork()
+synchronous blocking IO
+synchronous non-blocking IO
+async IO
+async non-blocking IO
+async
 asynchronous passes control to kernelspace for further processing
+
+
+Blocking IO
+Async IO
+Non blocking IO (single threaded IO where using select to determine which IO ops are ready)
+Async Non Blocking IO
+http://stackoverflow.com/questions/25099640/non-blocking-io-vs-async-io-and-implementation-in-java
