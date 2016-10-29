@@ -1,0 +1,28 @@
+In the new C++17 standard and the previous standards there are numerous facilities to assist in concurrent programming.
+
+std::thread to create new threads for concurrent processing.
+std::mutex for synchronization of shared data between threads.
+std::lock uses a deadlock avoidance algorithm to avoid deadlock.
+std::promise asynchronously acquire a value
+std::future accesses the result of asynchronous operations
+std::async runs a function asynchronously
+
+system calls
+ 
+ * Socket
+ * desc: Create an endpoint for communication
+ * url:  http://man7.org/linux/man-pages/man2/socket.2.html
+ * inc:  <sys/types.h>, <sys/socket.h>
+ * int:  int socket(int domain, int type, int protocol)
+ * tex:  socket() creates an endpoint for communication and returns a file descriptor that refers to that endpoint. When a socket is created with the socket() system call, it exists in a name space (address family) but has no address assigned to it. Using bind() will assign a address specified by addr. 
+
+select()
+poll()
+kqueue()
+epoll()
+
+
+lambdas
+iterator
+queues
+socket abstraction

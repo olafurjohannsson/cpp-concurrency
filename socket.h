@@ -7,9 +7,19 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
-
+#include <sys/ioctl.h>
 #include <iostream>
 #include <string>
+
+using namespace std;
+
+class SocketConnectException: public exception
+{
+  virtual const char* what() const throw()
+  {
+    return "Socket could not establish connection";
+  }
+} myex;
 
 class Socket
 {
@@ -20,41 +30,54 @@ class Socket
 
         Socket(uint32_t port) 
         {
-            // init file descriptor
+            // init socket file descriptor
             sock_fd = socket(PF_INET, SOCK_STREAM, 0);
 
             // file descriptor fail
             if (sock_fd < 0) {
-                printf("err\n");
                 return;
             }
 
+            /*
+                AF_INET: Address Family
+                htons:   Host to network short
+            */
             servername.sin_family = AF_INET;
             servername.sin_port = htons(port);
         };
 
         bool Connect(const char *hostname) {
-            
+            std::cout << "Function connect(), hostname: " << hostname << std::endl;
             struct hostent *hostinfo = gethostbyname(hostname);
             
             // host not found
             if (hostinfo == NULL) {
+                std::cout << "Hostinfo is NULL\n";
                 return false;
             }
 
             servername.sin_addr = *(struct in_addr *) hostinfo->h_addr;
 
             if (0 > connect(sock_fd, (struct sockaddr *)&servername, sizeof(servername))) {
+                std::cout << "Could not connect to socket" << std::endl;
                 return false;
             }
+            std::cout << "Connected to socket\n";
             return true;
         }
 
-        bool Close() { close(sock_fd); }
+        bool Close() 
+        { 
+            close(sock_fd); 
+            sock_fd = 0;
+            return true; 
+        }
 
-        int Write(std::string value)
+        int32_t Write(std::string value)
         {
-            int nbytes = ::write(sock_fd, value.c_str(), strlen(value.c_str()) + 1);
+            // Write to socket file descriptor
+            int32_t nbytes = ::write(sock_fd, value.c_str(), strlen(value.c_str()) + 1);
+            std::cout << "nbytes written: " << nbytes << std::endl;
             if (nbytes < 0) {
                 return 0;
             }
@@ -62,23 +85,28 @@ class Socket
             return nbytes;
         }
 
-        const std::string Read() {
-            char buffer[512];
-            int nbytes;
+        const std::string Read() 
+        {            
+            int32_t nbytes = 1024;
 
-            memset(buffer, 0x00, 512);
+            //ioctl(sock_fd, FIONREAD, &nbytes);
+            char *buffer = new char[nbytes];
+            memset(buffer, 0x00, nbytes);
+            if (nbytes > 0) {
+                nbytes = ::read(sock_fd, buffer, nbytes);
+                std::cout << "nbytes read " << nbytes << std::endl;
+            }
 
-            nbytes = ::read(sock_fd, buffer, 512);
             if (nbytes < 0) {
                 printf("no bytes read\n");
             }
             else if (nbytes == 0) {
                 printf("EOF\n");
             }
-            else {
-                if (buffer != NULL)
-                    return std::string(buffer);
-                return "";
-            }
+            
+            std::string strBuffer(buffer);
+            delete[] buffer;
+
+            return strBuffer;
         }
 };

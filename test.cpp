@@ -7,22 +7,23 @@ int main()
 {
     Socket sock(80);
     std::cout << "works" << std::endl;
-    
-    if (sock.Connect("127.0.0.1")) {
+
+    if (sock.Connect("google.com")) {
         std::cout << "connected\n";
 
         // for 2s
-        using namespace std::chrono_literals;
+        // does not work on osx 
+        // using namespace std::chrono_literals;
         for (;;) {
 
             int written = sock.Write("test");
 
-            std::cout << "written: " << written << std::endl;
+            std::this_thread::sleep_for(
+                    std::chrono::seconds(2));
 
-            std::this_thread::sleep_for(2s);
-
+            std::cout << "starting read\n";
             std::string r = sock.Read();
-
+            std::cout << "read done\n";
             if (!r.empty()) {
                 printf("r: %s\n", r.c_str());
             }
