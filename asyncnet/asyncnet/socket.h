@@ -6,6 +6,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <arpa/inet.h>
 #include <netdb.h>
 #include <sys/ioctl.h>
 #include <iostream>
@@ -47,22 +48,19 @@ class Socket
         };
 
         bool Connect(const char *hostname) {
-            std::cout << "Function connect(), hostname: " << hostname << std::endl;
             struct hostent *hostinfo = gethostbyname(hostname);
             
             // host not found
             if (hostinfo == NULL) {
-                std::cout << "Hostinfo is NULL\n";
                 return false;
             }
 
             servername.sin_addr = *(struct in_addr *) hostinfo->h_addr;
 
             if (0 > connect(sock_fd, (struct sockaddr *)&servername, sizeof(servername))) {
-                std::cout << "Could not connect to socket" << std::endl;
                 return false;
             }
-            std::cout << "Connected to socket\n";
+            
             return true;
         }
 
@@ -77,12 +75,52 @@ class Socket
         {
             // Write to socket file descriptor
             int32_t nbytes = ::write(sock_fd, value.c_str(), strlen(value.c_str()) + 1);
-            std::cout << "nbytes written: " << nbytes << std::endl;
+            
             if (nbytes < 0) {
                 return 0;
             }
             
             return nbytes;
+        }
+
+        void Getaddrinfo(std::string address) {
+            int status;
+            struct addrinfo hints, *servinfo, *p;
+            char ipstr[INET6_ADDRSTRLEN];
+
+            memset(&hints, 0x00, sizeof(hints));
+            hints.ai_family = AF_UNSPEC; // ipv4 or ipv6
+            hints.ai_socktype = SOCK_STREAM; // tcp socket
+            hints.ai_flags = AI_PASSIVE; // fill in my ip for me
+
+            if ((status = getaddrinfo(address.c_str(), "80", &hints, &servinfo)) != 0) {
+                printf("getaddrinfo err: %s\n", gai_strerror(status));
+                exit(1); 
+            }
+            // servinfo now points to a linked list of 1 or more struct addrinfos
+            for (p = servinfo; p != NULL; p = p->ai_next) {
+                void *addr;
+                char *ipver;
+
+                if (p->ai_family == AF_INET) {
+                    struct sockaddr_in *ipv4 = (struct sockaddr_in *)p->ai_addr;
+                    addr = &(ipv4->sin_addr);
+                    ipver = &std::string("IPv4")[0];
+                }
+                else {
+                    // IPv6
+                    
+                }
+                // convert IP to str
+                inet_ntop(p->ai_family, addr, ipstr, sizeof(ipstr));
+                
+                std::cout << "IP: " << ipver << "Str: " << ipstr << std::endl;
+            }
+            // ... do everything until you don't need servinfo anymore ....
+
+            freeaddrinfo(servinfo); // free the linked-list
+            std::cout << "returning from Getaddrinfo()\n";
+            exit(0);
         }
 
         const std::string Read() 
