@@ -11,6 +11,7 @@
 #include <sys/ioctl.h>
 #include <iostream>
 #include <string>
+#include <zmq.hpp>
 
 using namespace std;
 
@@ -71,16 +72,14 @@ class Socket
             return true; 
         }
 
-        int32_t Write(std::string value)
+        ssize_t Write(std::string value)
         {
             // Write to socket file descriptor
-            int32_t nbytes = ::write(sock_fd, value.c_str(), strlen(value.c_str()) + 1);
+            char buff[128];
+            sprintf(buff, "test");
+            ssize_t nbytes = ::write(sock_fd, buff, 128);  //value.c_str(), strlen(value.c_str()) + 1);
             
-            if (nbytes < 0) {
-                return 0;
-            }
-            
-            return nbytes;
+            return nbytes < 0 ? 0 : nbytes;
         }
 
         void Getaddrinfo(std::string address) {
@@ -124,15 +123,29 @@ class Socket
         }
 
         const std::string Read() 
-        {            
-            int32_t nbytes = 1024;
+        {
+            size_t chunk_size = 256;
+            ssize_t bytes_read;
+            char buff[chunk_size];
+            printf("starting to read\n");
+            while ((bytes_read = ::read(this->sock_fd, &buff, chunk_size) > 0)) {
+                printf("bytes_read: %d, buffer: %s\n", bytes_read, buff);
+            }
+            printf("done\n");
+            return "";
+            
+            ssize_t nbytes = 1024;
 
             //ioctl(sock_fd, FIONREAD, &nbytes);
             char *buffer = new char[nbytes];
             memset(buffer, 0x00, nbytes);
-            if (nbytes > 0) {
+            
+            if (sock_fd > 0) {
                 nbytes = ::read(sock_fd, buffer, nbytes);
                 std::cout << "nbytes read " << nbytes << std::endl;
+            }
+            else {
+                std::cout << "Socket descriptor is invalid\n";
             }
 
             if (nbytes < 0) {

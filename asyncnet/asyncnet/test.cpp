@@ -7,19 +7,19 @@
 #include <stdlib.h>
 
 /*
-    C++ includes
-    Mostly STL
+    C++ STL includes
 */
 #include <iostream>
 #include <thread>
 #include <chrono>
+#include <vector>
 #include <string>
+#include <functional>
 
 /*
     Local header includes
 */
 #include "socket.h"
-
 
 
 std::string displayOptions() {
@@ -32,19 +32,23 @@ std::string displayOptions() {
     );
 }
 
-bool isdigit1(std::string s) {
-    return false;
-}
 
-bool filterDigit2(std::string value) {
-    std::string::const_iterator it;
-    for (it = value.begin(); it != value.end() && std::isdigit(*it); ++it)
-        ;
-    return !value.empty() && it == value.end();
-}
+#include "subscriber.h"
 
 int main()
-{   
+{
+    
+    subscriber sub;
+    
+    return 0;
+    /////////
+    Socket s(80);
+    if (s.Connect("visir.is")) {
+        s.Write("test");
+        std::cout << s.Read() << std::endl;
+    }
+    
+    return 0;
     int32_t input, port;
     std::string hostname, address;
     bool connected = false;
@@ -54,20 +58,10 @@ int main()
     std::cout << "Setting up socket on port " << port << std::endl;
     Socket sock(port);
 
-    //std::string s;
-    
-    bool filterDigit = [](std::string value) {
-        return !value.empty() && std::find_if(value.begin(), value.end(), [](char c) {
-            return !std::isdigit(c);
-        }) == value.end();
-    };
-
-    
-
-
     for (;;) {
         std::cout << displayOptions();
         std::cin >> input;
+        std::cin.clear();
         
         
 
@@ -83,6 +77,16 @@ int main()
                     std::cout << "Could not establish connection\n";
                 }
                 break;
+                
+            case 2:
+                std::cout << "Data: ";
+                if (sock.Write(std::string(std::istreambuf_iterator<char>(std::cin), {})) > 0)
+                {
+                    std::cout << "Response: " << sock.Read() << std::endl;
+                }
+                
+                break;
+                
             case 4:
                 std::cout << "Enter address name:";
                 
@@ -99,34 +103,4 @@ int main()
     }
 
     return 0;
-/*
-    Socket sock(80);
-    std::cout << "works" << std::endl;
-
-    if (sock.Connect("google.com")) {
-        std::cout << "connected\n";
-
-        // for 2s
-        // does not work on osx 
-        // using namespace std::chrono_literals;
-        for (;;) {
-
-            int written = sock.Write("test");
-
-            std::this_thread::sleep_for(
-                    std::chrono::seconds(2));
-
-            std::cout << "starting read\n";
-            std::string r = sock.Read();
-            std::cout << "read done\n";
-            if (!r.empty()) {
-                printf("r: %s\n", r.c_str());
-            }
-        }
-
-        sock.Close();
-
-    }
-    return 0;
-    */
 }

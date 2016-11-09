@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		CCCC62DD1DC6020E0060004F /* test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCCC62DC1DC6020E0060004F /* test.cpp */; };
+		CCF43A5C1DD3B1B90084BD6A /* subscriber.h in Sources */ = {isa = PBXBuildFile; fileRef = CCF43A5B1DD3B1B90084BD6A /* subscriber.h */; };
+		CCF43A5E1DD3B6440084BD6A /* libzmq.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CCF43A5D1DD3B6440084BD6A /* libzmq.dylib */; };
+		CCF43A601DD3B6E40084BD6A /* libzmq.5.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CCF43A5F1DD3B6E40084BD6A /* libzmq.5.dylib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -23,9 +26,17 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		CC088FDD1DD3B90300CF0CBE /* publisher.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = publisher.h; sourceTree = "<group>"; };
+		CC088FDE1DD3C07F00CF0CBE /* subscriber.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; name = subscriber.py; path = ../subscriber.py; sourceTree = "<group>"; };
 		CCCC62D11DC6019C0060004F /* asyncnet */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = asyncnet; sourceTree = BUILT_PRODUCTS_DIR; };
 		CCCC62DB1DC6020E0060004F /* socket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = socket.h; sourceTree = "<group>"; };
 		CCCC62DC1DC6020E0060004F /* test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test.cpp; sourceTree = "<group>"; };
+		CCF43A561DCEB4C40084BD6A /* connector.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = connector.h; sourceTree = "<group>"; };
+		CCF43A571DCF35510084BD6A /* downloader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = downloader.h; sourceTree = "<group>"; };
+		CCF43A581DCF35730084BD6A /* lambdastuff.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = lambdastuff.h; sourceTree = "<group>"; };
+		CCF43A5B1DD3B1B90084BD6A /* subscriber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = subscriber.h; sourceTree = "<group>"; };
+		CCF43A5D1DD3B6440084BD6A /* libzmq.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libzmq.dylib; path = ../../../../../usr/local/lib/libzmq.dylib; sourceTree = "<group>"; };
+		CCF43A5F1DD3B6E40084BD6A /* libzmq.5.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libzmq.5.dylib; path = ../../../../../usr/local/lib/libzmq.5.dylib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -33,6 +44,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CCF43A5E1DD3B6440084BD6A /* libzmq.dylib in Frameworks */,
+				CCF43A601DD3B6E40084BD6A /* libzmq.5.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -42,6 +55,8 @@
 		CCCC62C81DC6019C0060004F = {
 			isa = PBXGroup;
 			children = (
+				CCF43A5F1DD3B6E40084BD6A /* libzmq.5.dylib */,
+				CCF43A5D1DD3B6440084BD6A /* libzmq.dylib */,
 				CCCC62D31DC6019C0060004F /* asyncnet */,
 				CCCC62D21DC6019C0060004F /* Products */,
 			);
@@ -58,8 +73,14 @@
 		CCCC62D31DC6019C0060004F /* asyncnet */ = {
 			isa = PBXGroup;
 			children = (
+				CC088FDE1DD3C07F00CF0CBE /* subscriber.py */,
 				CCCC62DB1DC6020E0060004F /* socket.h */,
 				CCCC62DC1DC6020E0060004F /* test.cpp */,
+				CCF43A561DCEB4C40084BD6A /* connector.h */,
+				CCF43A571DCF35510084BD6A /* downloader.h */,
+				CCF43A581DCF35730084BD6A /* lambdastuff.h */,
+				CCF43A5B1DD3B1B90084BD6A /* subscriber.h */,
+				CC088FDD1DD3B90300CF0CBE /* publisher.h */,
 			);
 			path = asyncnet;
 			sourceTree = "<group>";
@@ -121,6 +142,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CCCC62DD1DC6020E0060004F /* test.cpp in Sources */,
+				CCF43A5C1DD3B1B90084BD6A /* subscriber.h in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -209,6 +231,8 @@
 		CCCC62D91DC6019C0060004F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
+				OTHER_LDFLAGS = "-lzmq";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -216,6 +240,8 @@
 		CCCC62DA1DC6019C0060004F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
+				OTHER_LDFLAGS = "-lzmq";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -239,6 +265,7 @@
 				CCCC62DA1DC6019C0060004F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
