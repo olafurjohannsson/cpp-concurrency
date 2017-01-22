@@ -134,7 +134,7 @@ class Socket
             printf("done\n");
             return "";
             
-            ssize_t nbytes = 1024;
+            ssize_t nbytes = 1024;°
 
             //ioctl(sock_fd, FIONREAD, &nbytes);
             char *buffer = new char[nbytes];
